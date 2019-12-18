@@ -13,11 +13,30 @@ Agent::Agent()
 Agent::~Agent()
 {
 	printf("Agent Destroyed!");
-	//RemoveOldWorldFile();
+	RemoveOldWorldFile(); 						//uncommented this as it was valid again
 }
-
+												//Added everything in this function
 void Agent::Initialize()
 {
+	worldState.agentLocation = Location(1, 1);
+	worldState.agentOrientation = RIGHT;
+	worldState.goldLocation;
+	worldState.agentAlive = true;
+	worldState.agentHasArrow = true;
+	worldState.agentHasGold = false;
+	worldState.agentInCave = false;
+	worldState.wumpusAlive = true;
+	returningToLadder = false;
+	goingToGold = true;
+	if (FileExists())
+	{
+		LoadPath();
+		goingToGold = true;
+	}
+	else
+	{
+		goingToGold = false;
+	}
 }
 void Agent::InitWorldState()
 {
@@ -33,10 +52,12 @@ void Agent::InitWorldState()
 	worldState.wumpusAlive = true;
 	IdentifySquare(SAFE, 1, 1);
 	returningToLadder = false;
+	
+												//changed this to just remove the file if it exists
 	if (FileExists())
 	{
-		LoadPath();
-		goingToGold = true;
+		goingToGold = false;
+		RemoveOldWorldFile();
 	}
 	else
 	{
@@ -166,7 +187,8 @@ bool Agent::isValid(int row, int col)
 		&& (col >= 0)
 		&& (col < Board.size())
 		&& (Board[col][row] == SAFE
-			|| Board[col][row] == GOLD));
+			|| Board[col][row] == GOLD
+			|| Board[col][row] == WUMPUS && worldState.wumpusAlive == false));								//Added This line------------------------------------------------------
 }
 Action Agent::GoingToGold()
 {
